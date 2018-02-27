@@ -13,7 +13,18 @@ if @bind
 else
 -%>
 <%-
-  Array(@ipaddress).uniq.each do |virtual_ip| (@ports.is_a?(Array) ? @ports : Array(@ports.split(","))).each do |port|
+  Array(@ipaddress).uniq.each do |virtual_ip|
+    ports = case @ports
+      when Array
+        @ports
+      when Integer
+        [@ports]
+      when String
+        @ports.split(',')
+      else
+        raise ArgumentError, 'Invalid type #{@ports.class}'
+
+    ports.each do |port|
   begin
     IPAddr.new(virtual_ip)
     valid_ip = true
